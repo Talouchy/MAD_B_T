@@ -6,6 +6,8 @@ function version1Router() {
 
     router.use('/user', routes.UserRoutes());
 
+    router.use('/bus-route', routes.BusRouteRoutes());
+
     return router;
 }
 

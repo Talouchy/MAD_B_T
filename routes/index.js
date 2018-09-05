@@ -1,5 +1,7 @@
 UserRoutes = require('./userRoutes');
+BusRouteRoutes = require('./busRouteRoutes');
 
 module.exports =  {
-    UserRoutes
+    UserRoutes,
+    BusRouteRoutes
 }
