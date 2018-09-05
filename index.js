@@ -5,7 +5,7 @@ const db = require('./lib/db');
 const logger = require('./lib/logger');
 const middleware = require('./middleware');
 
-const routes = require('./versions/v1');
+const apiVersionRouter = require('./versions/v1');
 
 // set up express app
 const app = express();
@@ -14,7 +14,7 @@ const app = express();
 app.use(bodyParser.json());
 
 // initialize routes
-app.use('/v1', routes);
+app.use('/v1', apiVersionRouter());
 
 // error logging middleware
 app.use(middleware.ErrorHandler.logErrors);
