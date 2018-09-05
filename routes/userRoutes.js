@@ -7,16 +7,20 @@ function userRouter() {
 
     // get a list of Users from the db
     router.get('/', function(req, res, next){
-        User.find({}).then((user) => {
+        User.find({})
+        .then((user) => {
             res.send(user);
-        }).catch((err) => next(createError(422, err.message)));
+        })
+        .catch((err) => next(createError(422, err.message)));
     });
 
     // get a single of Users from the db
     router.get('/:id', function(req, res, next){
-        User.findOne({_id: req.params.id}, '-password -_id').then((user) => {
+        User.findOne({_id: req.params.id}, '-password -_id')
+        .then((user) => {
             res.send(user);
-        }).catch((err) => next(createError(422, err.message)));
+        })
+        .catch((err) => next(createError(422, err.message)));
     });
 
     // add a new User to the db
