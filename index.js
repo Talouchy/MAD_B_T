@@ -5,7 +5,7 @@ const db = require('./lib/db');
 const logger = require('./lib/logger');
 const middleware = require('./middleware');
 
-const routes = require('./routes/v1');
+const routes = require('./versions/v1');
 
 // set up express app
 const app = express();
