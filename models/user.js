@@ -22,12 +22,15 @@ const UserSchema = new Schema({
         type: Date,
         default: Date.now,
         required: true
-    }
-
+    },
+    busRoutes: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'busroutes'
+    }]
 });
 
 UserSchema.plugin(uniqueValidator, {message: 'Email is already taken.'});
 
 const User = mongoose.model('user', UserSchema);
 
-module.exports = User;
+module.exports = {User, UserSchema};

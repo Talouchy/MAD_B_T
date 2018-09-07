@@ -21,6 +21,6 @@ const BusRouteSchema = new Schema({
 
 BusRouteSchema.plugin(uniqueValidator, {message: 'Bus Route Exists.'});
 
-const BusRoute = mongoose.model('busRoute', BusRouteSchema);
+const BusRoute = mongoose.model('busroutes', BusRouteSchema);
 
-module.exports = BusRoute;
+module.exports = {BusRoute, BusRouteSchema};

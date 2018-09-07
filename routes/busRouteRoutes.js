@@ -1,6 +1,6 @@
 const express = require ('express');
 const createError = require('http-errors');
-const BusRoute = require('../models/busRoute');
+const {BusRoute,  } = require('../models/busRoute');
 
 function busRouteRouter() {
     const router = express.Router();
