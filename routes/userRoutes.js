@@ -13,7 +13,7 @@ function userRouter() {
         .then((user) => {
             res.send(user);
         })
-        .catch((err) => next(createError(423, err)));
+        .catch((err) => next(createError(422, err.message)));
     });
 
     // get a single Users from the db
