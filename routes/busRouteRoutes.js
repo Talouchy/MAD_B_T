@@ -5,23 +5,26 @@ const {BusRoute,  } = require('../models/busRoute');
 function busRouteRouter() {
     const router = express.Router();
 
-    // get a list of Users from the db
+    // get a list of Bus Routes from the db
     router.get('/', function(req, res, next){
         BusRoute.find({})
         .then((busRoute) => {
             res.send(busRoute);
-        }).catch((err) => next(createError(422, err.message)));
+        })
+        .catch((err) => next(createError(422, err.message)));
     });
 
-    // get a single of Users from the db
+    // get a single Bus Route from the db
     router.get('/:id', function(req, res, next){
         BusRoute.findOne({_id: req.params.id}, '-password -_id')
         .then((busRoute) => {
+            if(!busRoute) throw createError(404, 'Bus Route not found')
             res.send(busRoute);
-        }).catch((err) => next(createError(422, err.message)));
+        })
+        .catch(next);
     });
 
-    // add a new User to the db
+    // add a new Bus Route to the db
     router.post('/', function(req, res, next) {
         BusRoute.create(req.body)
         .then((busRoute) => {
@@ -30,20 +33,22 @@ function busRouteRouter() {
         .catch((err) => next(createError(422, err.message)));
     });
 
-    // update a User in the db
+    // update a Bus Route in the db
     router.put('/:id', function(req, res, next){
         BusRoute.findOneAndUpdate({_id: req.params.id}, req.body)
         .then((busRoute) => {
+            if(!busRoute) throw createError(404, 'Bus Route not found')
             BusRoute.findOne({_id: req.params.id}, '-_id')
             .then((busRoute) => {
+            if(!busRoute) throw createError(404, 'Bus Route not found')
                 res.send(busRoute);
             })
-            .catch((err) => next(createError(422, err.message)));
+            .catch((err) => next(createError(422, err)));
         })
-        .catch((err) => next(createError(422, err.message)));
+        .catch(next);
     });
 
-    // delete a User from the db
+    // delete a Bus Route from the db
     router.delete('/:id', function(req, res, next){
         BusRoute.deleteOne({_id: req.params.id})
         .then((busRoute) => {
@@ -51,7 +56,7 @@ function busRouteRouter() {
                 throw createError(404, "No Such User");
             res.send(busRoute);
         })
-        .catch((err) => next(createError(422, err.message)));
+        .catch((err) => next(createError(422, err)));
     });
 
     return router;
