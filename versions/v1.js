@@ -8,6 +8,10 @@ function version1Router() {
 
     router.use('/bus-route', routes.BusRouteRoutes());
 
+    router.use('/seat', routes.SeatRoutes());
+
+    router.use('/bus', routes.BusRoutes());
+
     return router;
 }
 
