@@ -13,6 +13,9 @@ const app = express();
 // initialize body parser
 app.use(bodyParser.json());
 
+// Authentication middleware
+app.use(middleware.Authentication.verifyHeaderToken);
+
 // initialize routes
 app.use('/v1', apiVersionRouter());
 
