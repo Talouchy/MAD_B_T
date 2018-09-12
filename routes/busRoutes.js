@@ -19,7 +19,7 @@ function busRouter() {
 
     // get a single Bus from the db
     router.get('/:id', function(req, res, next){
-        Bus.findById( req.params.id, '-password -_id')
+        Bus.findById( req.params.id, '-__v -_id')
         .populate('leftSeats', '-_id -__v')
         .populate('rightSeats', '-_id -__v')
         .then((bus) => {
