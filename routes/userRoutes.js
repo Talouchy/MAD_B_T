@@ -1,11 +1,48 @@
 const express = require ('express');
 const createError = require('http-errors');
+const CONFIG = require('../config/config');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const {User, UserSchema} = require('../models/user');
 const {BusRoute, BusRouteSchema} = require('../models/busRoute');
 
 function userRouter() {
     const router = express.Router();
 
+    // get a list of Users from the db
+    router.post('/authenticate', function(req, res, next){
+        if(!req.body.email && !req.body.password) throw createError(422, 'Email and password required.');
+        User.findOne({ email:req.body.email })
+        .populate('busRoutes', '-_id -__v')
+        .then((user) => {
+            if(!user) throw createError(404, 'Invalid email or password!');
+            var isMatch = bcrypt.compareSync(req.body.password, user.password);
+
+            if(isMatch) {
+                const payload = {
+                    id: user.id 
+                };
+
+                var token = jwt.sign(payload, CONFIG.jwt_encryption, {
+                    expiresIn: CONFIG.jwt_expiration
+                });
+                
+                delete user.password;
+                delete user._id;
+                user.token = token;
+    
+                res.send({
+                    "busRoutes": user.busRoutes,
+                    "email": user.email,
+                    "regDate": user.regDate,
+                    "token": token
+                });
+                } else throw createError(401, 'Incorrect Email or password');
+            
+        })
+        .catch(next);
+    });
+    
     // get a list of Users from the db
     router.get('/', function(req, res, next){
         User.find({})
@@ -29,8 +66,11 @@ function userRouter() {
 
     // add a new User to the db
     router.post('/', function(req, res, next) {
+        req.body.password = bcrypt.hashSync(req.body.password, 8);
+        
         User.create(req.body)
         .then((user) => {
+            if(!user) throw createError(404, 'User not found')
             res.send(user);
         })
         .catch((err) => next(createError(422, err.message)));
