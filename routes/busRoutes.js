@@ -31,11 +31,16 @@ function busRouter() {
 
     // add a new Bus to the db
     router.post('/', function(req, res, next) {
-        Bus.create(req.body)
-        .then((bus) => {
-            res.send(bus);
-        })
-        .catch((err) => next(createError(422, err.message)));
+      Bus.insertMany(req.body)
+      .then((buses) => {
+          res.send(buses);
+      })
+      .catch((err) => next(createError(422, err.message)));
+        // Bus.create(req.body)
+        // .then((bus) => {
+        //     res.send(bus);
+        // })
+        // .catch((err) => next(createError(422, err.message)));
     });
 
     // update a Bus in the db
@@ -96,7 +101,7 @@ function busRouter() {
         .populate('leftSeats')
         .populate('rightSeats')
         .then((bus) => { res.send(bus) })
-//      FIXME: Does not return errors 
+//      FIXME: Does not return errors
     });
 
     // delete a Bus from the db
@@ -128,7 +133,7 @@ function busRouter() {
                     bus.leftSeats.some((element, index) => {
                         if(element.equals(req.params.id_s))
                             bus.leftSeats.splice(index, 1);
-                        return true;  
+                        return true;
                     });
                     break;
                 default:

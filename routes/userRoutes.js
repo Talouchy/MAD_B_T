@@ -9,7 +9,18 @@ const {BusRoute, BusRouteSchema} = require('../models/busRoute');
 function userRouter() {
     const router = express.Router();
 
-    // get a list of Users from the db
+    // authenticate user token
+    router.get('/authenticate', function(req, res, next){
+      if(req.decoded) {
+        res.status(200).send({
+            auth: true,
+            message: "Token authenticated"
+        })
+        next()
+      } else throw createError(401, 'Failed to Authenticate')
+    });
+
+    // authenticate Users email and pass
     router.post('/authenticate', function(req, res, next){
         if(!req.body.email && !req.body.password) throw createError(422, 'Email and password required.');
         User.findOne({ email:req.body.email })
@@ -20,17 +31,17 @@ function userRouter() {
 
             if(isMatch) {
                 const payload = {
-                    id: user.id 
+                    id: user.id
                 };
 
                 var token = jwt.sign(payload, CONFIG.jwt_encryption, {
                     expiresIn: CONFIG.jwt_expiration
                 });
-                
+
                 delete user.password;
                 delete user._id;
                 user.token = token;
-    
+
                 res.send({
                     "busRoutes": user.busRoutes,
                     "email": user.email,
@@ -38,11 +49,22 @@ function userRouter() {
                     "token": token
                 });
                 } else throw createError(401, 'Incorrect Email or password');
-            
         })
         .catch(next);
     });
-    
+
+    // get a the user from the db
+    router.get('/me', function(req, res, next){
+      if(req.decoded) {
+        User.findOne({_id: req.decoded.id})
+        .populate('busRoutes', '-__v')
+        .then((user) => {
+            res.send(user);
+        })
+        .catch((err) => next(createError(422, err.message)))
+      } else throw createError(401, 'Failed to Authenticate')
+    });
+
     // get a list of Users from the db
     router.get('/', function(req, res, next){
         User.find({})
@@ -67,10 +89,11 @@ function userRouter() {
     // add a new User to the db
     router.post('/', function(req, res, next) {
         req.body.password = bcrypt.hashSync(req.body.password, 8);
-        
+
         User.create(req.body)
         .then((user) => {
             if(!user) throw createError(404, 'User not found')
+            // TODO: remove user password
             res.send(user);
         })
         .catch((err) => next(createError(422, err.message)));
@@ -92,8 +115,8 @@ function userRouter() {
     });
 
     // update Bus Route of a User
-    router.put('/:id/bus-route', function(req, res, next) {
-        User.findOne({_id: req.params.id})
+    router.put('/bus-route/add', function(req, res, next) {
+        User.findOne({_id: req.decoded.id})
         .then((user) => {
             if(!user) throw createError(404, 'User not found')
             let oldUser = user;
@@ -138,8 +161,9 @@ function userRouter() {
     });
 
     // delete Bus Route of a User
-    router.delete('/:id_u/bus-route/:id_br', function(req, res, next) {
-        User.findByIdAndUpdate(req.params.id_u)
+    router.delete('/bus-route/:id_br', function(req, res, next) {
+      if(req.decoded) {
+        User.findByIdAndUpdate(req.decoded.id)
         .then((user) => {
             if(!user) throw createError(404, 'User not found')
             user.busRoutes.pull(req.params.id_br);
@@ -147,6 +171,7 @@ function userRouter() {
             res.send(user);
         })
         .catch(next);
+      } else throw createError(401, 'Failed to Authenticate')
     });
 
     return router;
