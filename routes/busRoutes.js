@@ -36,11 +36,6 @@ function busRouter() {
           res.send(buses);
       })
       .catch((err) => next(createError(422, err.message)));
-        // Bus.create(req.body)
-        // .then((bus) => {
-        //     res.send(bus);
-        // })
-        // .catch((err) => next(createError(422, err.message)));
     });
 
     // update a Bus in the db
