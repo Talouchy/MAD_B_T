@@ -46,7 +46,8 @@ const BusSchema = new Schema({
     },
     busAllocatedSpaceWidthRearLeft: {
         type: Number,
-        required: [true, 'Bus Allocated Space Rear Left width is required']
+        required: [true, 'Bus Allocated Space Rear Left width is required'],
+        default: -1
     },
     busAllocatedSpaceWidthRearRight: {
         type: Number,
