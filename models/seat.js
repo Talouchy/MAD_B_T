@@ -28,17 +28,3 @@ SeatSchema.plugin(uniqueValidator, {message: 'Seat title Exists.'});
 const Seat = mongoose.model('seats', SeatSchema);
 
 module.exports = {Seat, SeatSchema};
-
-
-/* Example
-[
-	{
-		"_id": "5b9341ab922b760e222722be",
-		"quantity": 3
-	},
-	{
-		"_id": "5b93410d922b760e222722bd",
-		"quantity": 1
-	}
-]   
-*/

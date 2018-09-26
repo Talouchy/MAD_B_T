@@ -12,6 +12,8 @@ function version1Router() {
 
     router.use('/bus', routes.BusRoutes());
 
+    router.use('/device', routes.MadRoutes());
+
     return router;
 }
 

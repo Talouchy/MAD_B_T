@@ -26,9 +26,9 @@ function busRouteRouter() {
 
     // add a new Bus Route to the db
     router.post('/', function(req, res, next) {
-        BusRoute.create(req.body)
-        .then((busRoute) => {
-            res.send(busRoute);
+        BusRoute.insertMany(req.body)
+        .then((busRoutes) => {
+            res.send(busRoutes);
         })
         .catch((err) => next(createError(422, err.message)));
     });
