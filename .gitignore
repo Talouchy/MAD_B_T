@@ -45,3 +45,4 @@ Thumbs.db
 # folders #
 ######################
 config/
+config/config.js
