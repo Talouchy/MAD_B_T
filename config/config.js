@@ -6,11 +6,11 @@ let CONFIG = {} //Make this global to use all over the application
 CONFIG.app          = process.env.APP   || 'development';
 CONFIG.port         = process.env.PORT  || '3000';
 
-CONFIG.db_dialect   = process.env.DB_DIALECT    || 'mongo';
-CONFIG.db_host      = process.env.DB_HOST       || 'ds115193.mlab.com';
-CONFIG.db_port      = process.env.DB_PORT       || '15193';
-CONFIG.db_name      = process.env.DB_NAME       || 'mad_b_t';
-CONFIG.db_user      = process.env.DB_USER       || 'root';
+CONFIG.db_dialect   = process.env.DB_DIALECT    || '';
+CONFIG.db_host      = process.env.DB_HOST       || '';
+CONFIG.db_port      = process.env.DB_PORT       || '';
+CONFIG.db_name      = process.env.DB_NAME       || '';
+CONFIG.db_user      = process.env.DB_USER       || '';
 CONFIG.db_password  = process.env.DB_PASSWORD   || '';
 
 CONFIG.jwt_encryption  = process.env.JWT_ENCRYPTION || 'jwt_please_change';
