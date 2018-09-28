@@ -26,6 +26,10 @@ const UserSchema = new Schema({
     busRoutes: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'busroutes'
+    }],
+    mads: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'mad'
     }]
 });
 

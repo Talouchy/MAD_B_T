@@ -5,6 +5,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const {User, UserSchema} = require('../models/user');
 const {BusRoute, BusRouteSchema} = require('../models/busRoute');
+const {Mad, MadSchema} = require('../models/mad');
 
 function userRouter() {
     const router = express.Router();
@@ -25,6 +26,7 @@ function userRouter() {
         if(!req.body.email && !req.body.password) throw createError(422, 'Email and password required.');
         User.findOne({ email:req.body.email })
         .populate('busRoutes', '-_id -__v')
+        .populate('mads', '-_id -__v')
         .then((user) => {
             if(!user) throw createError(404, 'Invalid email or password!');
             var isMatch = bcrypt.compareSync(req.body.password, user.password);
@@ -58,6 +60,7 @@ function userRouter() {
       if(req.decoded) {
         User.findOne({_id: req.decoded.id})
         .populate('busRoutes', '-__v')
+        .populate('mads', '-__v')
         .then((user) => {
             res.send(user);
         })
@@ -69,6 +72,7 @@ function userRouter() {
     router.get('/', function(req, res, next){
         User.find({})
         .populate('busRoutes', '-_id -__v')
+        .populate('mads', '-_id -__v')
         .then((user) => {
             res.send(user);
         })
@@ -79,6 +83,7 @@ function userRouter() {
     router.get('/:id', function(req, res, next){
         User.findById( req.params.id, '-password -_id')
         .populate('busRoutes', '-_id -__v')
+        .populate('mads', '-_id -__v')
         .then((user) => {
             if(!user) throw createError(404, 'User not found')
             res.send(user);
@@ -137,12 +142,49 @@ function userRouter() {
                         if(!user) throw createError(404, 'User not found')
                         User.findOne(oldUser._id, '-_id')
                         .populate('busRoutes', '-_id -__v')
+                        .populate('mads', '-_id -__v')
                         .then((user) => {
                             if(!user) throw createError(404, 'User not found')
                             res.send(user)
                         });
                     })
                 } else throw createError(409, "BusRoute already bookmarked");
+            })
+            .catch(next);
+        })
+        .catch(next);
+    });
+
+    // update Mad of a User
+    router.put('/device/add', function(req, res, next) {
+        User.findOne({_id: req.decoded.id})
+        .then((user) => {
+            if(!user) throw createError(404, 'User not found')
+            let oldUser = user;
+            if (Object.keys(req.body).length === 0)
+                throw createError(422, 'Device not selected');
+            Mad.findOne(req.body)
+            .then((mad) => {
+                var updatedUser = oldUser;
+                var isMadDuplicate = false;
+                if(!mad) throw createError(404, 'Device not found')
+                updatedUser.mads.forEach(element => {
+                    if(mad.equals(element)) isMadDuplicate = true;
+                });
+                if(!isMadDuplicate) {
+                    updatedUser.mads.push(mad);
+                    User.findOneAndUpdate({_id: oldUser._id}, {mads: updatedUser.mads})
+                    .then((user) => {
+                        if(!user) throw createError(404, 'User not found')
+                        User.findOne(oldUser._id, '-_id')
+                        .populate('busRoutes', '-_id -__v')
+                        .populate('mads', '-_id -__v')
+                        .then((user) => {
+                            if(!user) throw createError(404, 'User not found')
+                            res.send(user)
+                        });
+                    })
+                } else throw createError(409, "Device already bookmarked");
             })
             .catch(next);
         })
@@ -162,18 +204,32 @@ function userRouter() {
 
     // delete Bus Route of a User
     router.delete('/bus-route/:id_br', function(req, res, next) {
-      if(req.decoded) {
-        User.findByIdAndUpdate(req.decoded.id)
-        .then((user) => {
-            if(!user) throw createError(404, 'User not found')
-            user.busRoutes.pull(req.params.id_br);
-            user.save();
-            res.send(user);
-        })
-        .catch(next);
-      } else throw createError(401, 'Failed to Authenticate')
+        if(req.decoded) {
+            User.findByIdAndUpdate(req.decoded.id)
+            .then((user) => {
+                if(!user) throw createError(404, 'User not found')
+                user.busRoutes.pull(req.params.id_br);
+                user.save();
+                res.send(user);
+            })
+            .catch(next);
+        } else throw createError(401, 'Failed to Authenticate')
     });
 
+    // delete mad of a User
+    router.delete('/device/:id_m', function(req, res, next) {
+        if(req.decoded) {
+            User.findByIdAndUpdate(req.decoded.id)
+            .then((user) => {
+                if(!user) throw createError(404, 'User not found')
+                user.mads.pull(req.params.id_m);
+                user.save();
+                res.send(user);
+            })
+            .catch(next);
+        } else throw createError(401, 'Failed to Authenticate')
+    });
+    
     return router;
 }
 
