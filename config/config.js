@@ -7,9 +7,9 @@ CONFIG.app          = process.env.APP   || 'development';
 CONFIG.port         = process.env.PORT  || '3000';
 
 CONFIG.db_dialect   = process.env.DB_DIALECT    || 'mongo';
-CONFIG.db_host      = process.env.DB_HOST       || 'localhost';
-CONFIG.db_port      = process.env.DB_PORT       || '27017';
-CONFIG.db_name      = process.env.DB_NAME       || 'MadBusTransport';
+CONFIG.db_host      = process.env.DB_HOST       || 'ds115193.mlab.com';
+CONFIG.db_port      = process.env.DB_PORT       || '15193';
+CONFIG.db_name      = process.env.DB_NAME       || 'mad_b_t';
 CONFIG.db_user      = process.env.DB_USER       || 'root';
 CONFIG.db_password  = process.env.DB_PASSWORD   || '';
 
